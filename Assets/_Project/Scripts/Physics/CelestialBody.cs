@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public class CelestialBody
@@ -8,6 +9,8 @@ public class CelestialBody
     public double radius;      // км
     public Vector3d position;  // км
     public Vector3d velocity;  // км/с
+
+    [NonSerialized] public Transform visual;   // шар в сцене, создаётся менеджером
 
     public CelestialBody(string name, double mass, double radius, Vector3d position, Vector3d velocity)
     {
