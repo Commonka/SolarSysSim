@@ -436,7 +436,7 @@ MonoBehaviour:
   - {fileID: 1410830461}
   spaceCamera: {fileID: 330585548}
   sunLight: {fileID: 410087040}
-  followIndex: 1
+  followIndex: 0
   integratorType: 1
   timeScale: 60
   maxStepSeconds: 3600
@@ -682,7 +682,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: a26c59c1f622b604c8951935707553ba, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

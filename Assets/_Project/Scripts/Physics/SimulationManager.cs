@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class SimulationManager : MonoBehaviour
     IIntegrator integrator;
     double simTime, initialEnergy;
     Vector3d lastFollowPos;
+
+    // Кнопки скорости времени: подпись и значение (симулируемых секунд за реальную)
+    static readonly string[] speedLabels = { "Пауза", "1 мин/с", "1 час/с", "1 сут/с", "10 сут/с" };
+    static readonly double[] speedValues = { 0, 60, 3600, 86400, 864000 };
 
     void Start()
     {
@@ -69,16 +74,44 @@ public class SimulationManager : MonoBehaviour
         };
     }
 
+    // Камера начинает ехать вместе с телом i (-1 = свободный полёт)
+    void SetFollow(int i)
+    {
+        followIndex = i;
+        if (i >= 0) lastFollowPos = Bodies[i].position;
+    }
+
+    // Перенести камеру к телу i, повернуть на него и ехать вместе с ним
+    void GoTo(int i)
+    {
+        var b = Bodies[i];
+        spaceCamera.position = b.position + new Vector3d(-b.radius * 4, b.radius * 1.5, 0);
+        spaceCamera.LookAt(b.position);
+        SetFollow(i);
+    }
+
     void Update()
     {
         if (integrator == null) return;
         if (integrator.Name != integratorType.ToString()) SetIntegrator(integratorType);
 
+        // Горячие клавиши: 1 = Солнце, 2 = Земля, 0 = свободная камера
+        var kb = Keyboard.current;
+        if (kb != null)
+        {
+            if (kb.digit1Key.wasPressedThisFrame) SetFollow(0);
+            if (kb.digit2Key.wasPressedThisFrame) SetFollow(1);
+            if (kb.digit0Key.wasPressedThisFrame) SetFollow(-1);
+        }
+
         double advance = timeScale * Time.deltaTime;
-        int steps = Mathf.Clamp((int)System.Math.Ceiling(advance / maxStepSeconds), 1, maxStepsPerFrame);
-        double dt = advance / steps;
-        for (int i = 0; i < steps; i++) integrator.Step(Bodies, dt);
-        simTime += advance;
+        if (advance > 0)
+        {
+            int steps = Mathf.Clamp((int)System.Math.Ceiling(advance / maxStepSeconds), 1, maxStepsPerFrame);
+            double dt = advance / steps;
+            for (int i = 0; i < steps; i++) integrator.Step(Bodies, dt);
+            simTime += advance;
+        }
 
         // Камера следует за выбранным телом
         if (followIndex >= 0)
@@ -102,19 +135,50 @@ public class SimulationManager : MonoBehaviour
         }
         spaceCamera.transform.position = Vector3.zero;
 
-        if (sunLight != null)
+        // Свет идёт от Солнца к Земле (направление берём из позиций самих сфер)
+        if (sunLight != null && visuals.Length > 1)
         {
-            Vector3d dir = Bodies[1].position - Bodies[0].position;
-            sunLight.transform.rotation = Quaternion.LookRotation(dir.ToVector3());
+            Vector3 sunToEarth = visuals[1].position - visuals[0].position;
+            if (sunToEarth.sqrMagnitude > 0f)
+                sunLight.transform.rotation = Quaternion.LookRotation(sunToEarth);
         }
     }
 
     void OnGUI()
     {
         if (Bodies == null) return;
+
+        // Масштабируем интерфейс под высоту экрана, чтобы было читаемо при любом разрешении
+        float s = Mathf.Max(0.5f, Screen.height / 1080f);
+        GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
+        float virtualWidth = Screen.width / s;
+
         double e = Gravity.TotalEnergy(Bodies);
         double drift = (e - initialEnergy) / System.Math.Abs(initialEnergy);
         GUI.Label(new Rect(10, 10, 500, 90),
             $"Integrator: {integrator.Name}\nДни: {simTime / Constants.Day:F1}\nДрейф энергии: {drift:E3}");
+
+        GUILayout.BeginArea(new Rect(virtualWidth - 290, 10, 280, 520), GUI.skin.box);
+
+        GUILayout.Label("Камера следует за:");
+        for (int i = 0; i < Bodies.Length; i++)
+        {
+            GUILayout.BeginHorizontal();
+            bool on = followIndex == i;
+            if (GUILayout.Toggle(on, Bodies[i].name, GUI.skin.button) && !on) SetFollow(i);
+            if (GUILayout.Button("К телу", GUILayout.Width(80))) GoTo(i);
+            GUILayout.EndHorizontal();
+        }
+        bool free = followIndex < 0;
+        if (GUILayout.Toggle(free, "Свободная камера", GUI.skin.button) && !free) SetFollow(-1);
+
+        GUILayout.Space(12);
+        GUILayout.Label($"Скорость времени: {timeScale / Constants.Day:F3} сут/с");
+        for (int i = 0; i < speedLabels.Length; i++)
+        {
+            if (GUILayout.Button(speedLabels[i])) timeScale = speedValues[i];
+        }
+
+        GUILayout.EndArea();
     }
 }
