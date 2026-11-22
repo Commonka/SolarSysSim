@@ -10,7 +10,8 @@ public class CelestialBody
     public Vector3d position;  // км
     public Vector3d velocity;  // км/с
 
-    [NonSerialized] public Transform visual;   // шар в сцене, создаётся менеджером
+    [NonSerialized] public Transform visual; // сфера на сцене
+    [NonSerialized] public Color color = Color.white;
 
     public CelestialBody(string name, double mass, double radius, Vector3d position, Vector3d velocity)
     {
