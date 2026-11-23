@@ -83,7 +83,7 @@ Shader "SolarSys/SunGlare"
                 v *= smoothstep(1.0, 0.7, r);                      // обрезка по краю квада
 
                 // Центр белый, края тёплые
-                float3 warm = lerp(float3(1.0, 0.97, 0.9), float3(1.0, 0.55, 0.2), saturate(r * 1.6));
+                float3 warm = lerp(float3(1.0, 0.97, 0.9), float3(1.0, 0.55, 0.2), saturate(r * 3.0));
                 return float4(warm * _Color.rgb * v * _Intensity * _Fade, 1.0);
             }
             ENDHLSL
