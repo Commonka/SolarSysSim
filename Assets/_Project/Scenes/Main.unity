@@ -539,10 +539,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AtmosphereShell
   sim: {fileID: 549064792}
   bodyName: Earth
-  heightKm: 80
-  heightR: 0.01
-  heightM: 0.0025
-  sunIntensity: 8
+  heightKm: 150
+  heightR: 0.018
+  heightM: 0.004
+  sunIntensity: 5
   rayleighScale: 1
   mieScale: 0.4
   mieG: 0.76
