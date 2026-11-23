@@ -129,6 +129,7 @@ public class SimulationManager : MonoBehaviour
         return tilt * Quaternion.AngleAxis(angle, Vector3.up);
     }
 
+    
     void RemoveDrift()
     {
         Vector3d p = Vector3d.zero; double mTotal = 0;
@@ -211,6 +212,9 @@ public class SimulationManager : MonoBehaviour
             Vector3d dir = (Bodies[nearest].position - Bodies[0].position).Normalized;
             if (dir.SqrMagnitude > 0) sunLight.transform.rotation = Quaternion.LookRotation(dir.ToVector3());
         }
+        // Передаём позицию Солнца в шейдеры планет (для корректного освещения)
+        Vector3d sunRel = (Bodies[0].position - spaceCamera.position) * UnitsPerKm;
+        Shader.SetGlobalVector("_SunPositionWS", sunRel.ToVector3());
     }
 
     void OnGUI()
