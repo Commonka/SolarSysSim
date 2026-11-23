@@ -102,7 +102,7 @@ Material:
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Ambient: 0.0204
-    - _AtmoIntensity: 0.291
+    - _AtmoIntensity: 0.056
     - _AtmoPower: 4.06
     - _Blend: 0
     - _BlendModePreserveSpecular: 1

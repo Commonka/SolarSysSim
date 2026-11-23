@@ -432,6 +432,7 @@ GameObject:
   - component: {fileID: 549064794}
   - component: {fileID: 549064795}
   - component: {fileID: 549064796}
+  - component: {fileID: 549064797}
   m_Layer: 0
   m_Name: SimulationManager
   m_TagString: Untagged
@@ -524,6 +525,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SunLensFlare
   sim: {fileID: 549064792}
   intensity: 1
+--- !u!114 &549064797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8eb1b9203f112643a8444113aba8b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AtmosphereShell
+  sim: {fileID: 549064792}
+  bodyName: Earth
+  heightKm: 80
+  heightR: 0.01
+  heightM: 0.0025
+  sunIntensity: 8
+  rayleighScale: 1
+  mieScale: 0.4
+  mieG: 0.76
+  extinction: 0.8
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
