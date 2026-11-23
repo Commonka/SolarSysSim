@@ -1,10 +1,9 @@
 using UnityEngine;
 using UnityEngine.Rendering;
-
 public class SimulationManager : MonoBehaviour
 {
     public enum IntegratorType { Euler, Leapfrog, RK4 }
-
+    Camera cam;
     [Header("Визуализация")]
     public SpaceCamera spaceCamera;
     public Light sunLight;
@@ -45,8 +44,7 @@ public class SimulationManager : MonoBehaviour
         spaceCamera.LookAt(earth.position);
         SetFollow(earthIdx);
 
-        var cam = spaceCamera.GetComponent<Camera>();
-        cam.nearClipPlane = 0.01f;
+        cam = spaceCamera.GetComponent<Camera>();
         cam.farClipPlane = 1e7f;
     }
 
@@ -247,6 +245,15 @@ public class SimulationManager : MonoBehaviour
     // Floating origin: камера в нуле, объекты считаются относительно неё в double
     void UpdateVisuals()
     {
+                // Динамическая near-плоскость: расстояние до ближайшей поверхности
+        double minSurf = double.MaxValue;
+        foreach (var b in Bodies)
+        {
+            double d = ((b.position - spaceCamera.position).Magnitude - b.radius) * UnitsPerKm;
+            if (d < minSurf) minSurf = d;
+        }
+        cam.nearClipPlane = (float)System.Math.Clamp(minSurf * 0.05, 0.01, 1000.0);
+        
         for (int i = 0; i < Bodies.Length; i++)
         {
             Vector3d rel = (Bodies[i].position - spaceCamera.position) * UnitsPerKm;
@@ -271,6 +278,7 @@ public class SimulationManager : MonoBehaviour
         // Передаём позицию Солнца в шейдеры планет (для корректного освещения)
         Vector3d sunRel = (Bodies[0].position - spaceCamera.position) * UnitsPerKm;
         Shader.SetGlobalVector("_SunPositionWS", sunRel.ToVector3());
+        
     }
 
     void OnGUI()

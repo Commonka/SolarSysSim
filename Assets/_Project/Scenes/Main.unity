@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -178,7 +179,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -278,6 +279,19 @@ MonoBehaviour:
   speedMultiplier: 1
   scrollStep: 1.25
   boostFactor: 5
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7c7f4b13cfe6484782651a35e145bf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkySetup
+  skyMaterial: {fileID: 2100000, guid: f024dcfd6cd204f4c97337e8e65769bb, type: 2}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,6 +430,8 @@ GameObject:
   - component: {fileID: 549064793}
   - component: {fileID: 549064792}
   - component: {fileID: 549064794}
+  - component: {fileID: 549064795}
+  - component: {fileID: 549064796}
   m_Layer: 0
   m_Name: SimulationManager
   m_TagString: Untagged
@@ -477,6 +493,37 @@ MonoBehaviour:
   widthFactor: 0.003
   alpha: 0.35
   tint: {r: 0.6, g: 0.65, b: 0.7, a: 1}
+--- !u!114 &549064795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b03146bee7a70e2478cb2aaa9f22c43b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SunGlare
+  sim: {fileID: 549064792}
+  minHalfAngleDeg: 10
+  sizeInDisks: 10
+  color: {r: 1, g: 0.95, b: 0.85, a: 1}
+  intensity: 5
+--- !u!114 &549064796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d399bceab6122584f952d2e4619c3ef2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SunLensFlare
+  sim: {fileID: 549064792}
+  intensity: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
