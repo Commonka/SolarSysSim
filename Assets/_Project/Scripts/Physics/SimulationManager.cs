@@ -55,7 +55,9 @@ public class SimulationManager : MonoBehaviour
         for (int i = 0; i < Bodies.Length; i++)
         {
             var b = Bodies[i];
-            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere); // диаметр 1
+            var go = new GameObject();
+            go.AddComponent<MeshFilter>().sharedMesh = GetUnitSphereMesh();
+            go.AddComponent<MeshRenderer>();
             go.name = b.name + "Visual";
             Destroy(go.GetComponent<Collider>());
             go.transform.localScale = Vector3.one * (float)(2 * b.radius * UnitsPerKm);
@@ -88,7 +90,61 @@ public class SimulationManager : MonoBehaviour
             b.visual = go.transform;
         }
     }
+    // ===== ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ: гладкая сфера вместо примитива Unity =====
+    static Mesh unitSphereMesh; // общий меш на все тела (radius 0.5 = диаметр 1, как у примитива)
 
+    static Mesh GetUnitSphereMesh(int widthSeg = 96, int heightSeg = 48)
+    {
+        if (unitSphereMesh != null) return unitSphereMesh;
+
+        int vCount = (widthSeg + 1) * (heightSeg + 1);
+        var verts = new Vector3[vCount];
+        var norms = new Vector3[vCount];
+        var uvs   = new Vector2[vCount];
+        int k = 0;
+        for (int y = 0; y <= heightSeg; y++)
+        {
+            float v = (float)y / heightSeg;
+            float pitch = v * Mathf.PI;
+            for (int x = 0; x <= widthSeg; x++, k++)
+            {
+                float u = (float)x / widthSeg;
+                float yaw = u * Mathf.PI * 2f;
+                var n = new Vector3(
+                    Mathf.Sin(pitch) * Mathf.Cos(yaw),
+                    Mathf.Cos(pitch),
+                    Mathf.Sin(pitch) * Mathf.Sin(yaw));
+                verts[k] = n * 0.5f;
+                norms[k] = n;
+                uvs[k] = new Vector2(u, v);
+            }
+        }
+
+        var tris = new int[widthSeg * heightSeg * 6];
+        k = 0;
+        for (int y = 0; y < heightSeg; y++)
+            for (int x = 0; x < widthSeg; x++)
+            {
+                int i = y * (widthSeg + 1) + x;
+                tris[k++] = i;             tris[k++] = i + 1;           tris[k++] = i + widthSeg + 1;
+                tris[k++] = i + 1;         tris[k++] = i + widthSeg + 2; tris[k++] = i + widthSeg + 1;
+            }
+
+        // Автостраховка: если ориентация треугольников получилась внутрь — разворачиваем
+        if (Vector3.Dot(Vector3.Cross(verts[tris[1]] - verts[tris[0]], verts[tris[2]] - verts[tris[0]]), verts[tris[0]]) < 0f)
+            for (int t = 0; t < tris.Length; t += 3)
+            { int tmp = tris[t + 1]; tris[t + 1] = tris[t + 2]; tris[t + 2] = tmp; }
+
+        var mesh = new Mesh { name = "UnitSphereHighPoly" };
+        mesh.SetVertices(verts);
+        mesh.SetNormals(norms);
+        mesh.SetUVs(0, uvs);
+        mesh.SetIndices(tris, MeshTopology.Triangles, 0);
+        mesh.RecalculateBounds();
+        unitSphereMesh = mesh;
+        return mesh;
+    }
+// ===== конец изменения =====
     // Тестовая сетка: клетки 30°, красный шов u=0, зелёный экватор,
     // белая северная шапка, тёмная южная.
     static Texture2D MakeGridTexture(Color baseCol)
