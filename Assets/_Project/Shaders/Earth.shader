@@ -80,10 +80,13 @@ Shader "SolarSys/Earth"
                 float u = atan2(nOS.z, nOS.x) * (0.5 / PI) + _LonOffset;
                 float v = asin(clamp(nOS.y, -1.0, 1.0)) / PI + 0.5;
                 float u1 = frac(u);
-                float u2 = frac(u + 0.5);
-                bool useB = fwidth(u2) < fwidth(u1);
-                float2 gx = useB ? float2(ddx(u2), ddx(v)) : float2(ddx(u1), ddx(v));
-                float2 gy = useB ? float2(ddy(u2), ddy(v)) : float2(ddy(u1), ddy(v));
+                // Производные берём от НЕПРЕРЫВНОЙ u: нет переключений веток -> нет пиксельного шума
+                float dx = ddx(u);
+                float dy = ddy(u);
+                dx = (abs(dx) > 0.5) ? 0.0 : dx;  // гасим единственный скачок на шве
+                dy = (abs(dy) > 0.5) ? 0.0 : dy;
+                float2 gx = float2(dx, ddx(v));
+                float2 gy = float2(dy, ddy(v));
 
                 float3 albedo = SAMPLE_TEXTURE2D_GRAD(_DayMap, sampler_DayMap, float2(u1, v), gx, gy).rgb;
 
@@ -103,7 +106,7 @@ Shader "SolarSys/Earth"
 
                 // Облака
                 float t = _Time.y * 0.002;
-                float uc = useB ? frac(u + 0.5 + t) : frac(u + t);
+                float uc = frac(u + t);
                 float cloudRaw = SAMPLE_TEXTURE2D_GRAD(_CloudMap, sampler_CloudMap, float2(uc, v), gx, gy).r;
                 float cloud = smoothstep(_CloudThreshold, _CloudThreshold + 0.25, cloudRaw);
 
