@@ -15,7 +15,7 @@ Material:
   m_InvalidKeywords:
   - _EMISSION
   - _SPECULARHIGHLIGHTS_OFF
-  m_LightmapFlags: 2
+  m_LightmapFlags: 6
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -92,21 +92,21 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _Contrast: 1.4
-    - _CoronaIntensity: 2.739
-    - _CoronaPower: 2.51
+    - _Contrast: 1.766
+    - _CoronaIntensity: 2.28
+    - _CoronaPower: 6.68
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _Emission: 1.376
+    - _Emission: 4.15
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Granulation: 0.5
+    - _Granulation: 0.801
     - _Metallic: 0
     - _NoiseScale: 3
     - _NoiseSpeed: 0.1
@@ -127,9 +127,9 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.8509804, b: 0.5019608, a: 1}
-    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.8509804, b: 0.5019608, a: 1}
     - _CoolColor: {r: 0.54999995, g: 0.11999995, b: 0.02, a: 1}
-    - _EmissionColor: {r: 0.60784316, g: 0.6, b: 0.101960786, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _HotColor: {r: 1, g: 0.9, b: 0.54999995, a: 1}
     - _MidColor: {r: 1, g: 0.45, b: 0.049999982, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

@@ -275,6 +275,9 @@ MonoBehaviour:
     z: 0
   speedFactor: 0.8
   lookSensitivity: 0.15
+  speedMultiplier: 1
+  scrollStep: 1.25
+  boostFactor: 5
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,6 +415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 549064793}
   - component: {fileID: 549064792}
+  - component: {fileID: 549064794}
   m_Layer: 0
   m_Name: SimulationManager
   m_TagString: Untagged
@@ -435,6 +439,8 @@ MonoBehaviour:
   sunLight: {fileID: 410087040}
   sunMaterial: {fileID: 2100000, guid: a26c59c1f622b604c8951935707553ba, type: 2}
   planetMaterial: {fileID: 2100000, guid: 4079acd4ab53c8f47943af7ca5d2cdee, type: 2}
+  earthMaterial: {fileID: 2100000, guid: c4500bd0e22cac8449171ceed5817aba, type: 2}
+  useTestGrid: 1
   integratorType: 1
   timeScale: 60
   maxStepSeconds: 3600
@@ -454,6 +460,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &549064794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7791f18e2aaa70e4b90d9205e512f70a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OrbitRenderer
+  sim: {fileID: 549064792}
+  showOrbits: 1
+  widthFactor: 0.003
+  alpha: 0.35
+  tint: {r: 0.6, g: 0.65, b: 0.7, a: 1}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Выполняется ПОСЛЕ SimulationManager (у него порядок 0), чтобы линии орбит
+// не отставали на кадр от планет при движении камеры.
+[DefaultExecutionOrder(100)]
 public class OrbitRenderer : MonoBehaviour
 {
     public SimulationManager sim;
@@ -10,7 +13,10 @@ public class OrbitRenderer : MonoBehaviour
     public Color tint = new Color(0.60f, 0.65f, 0.70f); // холодный серый оттенок
 
     const double UnitsPerKm = 0.001;
-    const int SEG = 128;
+    // Хорда провисает на r*(1-cos(pi/N)). Для орбиты Земли при N = 8192 это ~11 км
+    // (было 45 000 км при N = 128).
+    const int SegPlanet = 8192;
+    const int SegMoon = 720;
 
     LineRenderer[] lines;
     Transform[] roots;
@@ -30,7 +36,9 @@ public class OrbitRenderer : MonoBehaviour
 
         for (int i = 1; i < n; i++)
         {
-            centerIndex[i] = (bodies[i].name == "Moon" && earth >= 0) ? earth : 0;
+            bool isMoon = bodies[i].name == "Moon" && earth >= 0;
+            centerIndex[i] = isMoon ? earth : 0;
+            int seg = isMoon ? SegMoon : SegPlanet;
             double r = (bodies[i].position - bodies[centerIndex[i]].position).Magnitude;
 
             var go = new GameObject(bodies[i].name + "Orbit");
@@ -38,7 +46,7 @@ public class OrbitRenderer : MonoBehaviour
             lr.useWorldSpace = false;
             lr.loop = true;
             lr.alignment = LineAlignment.View;
-            lr.positionCount = SEG;
+            lr.positionCount = seg;
             lr.numCornerVertices = 4;
             lr.sharedMaterial = mat;
             lr.startWidth = lr.endWidth = 1f;
@@ -47,10 +55,10 @@ public class OrbitRenderer : MonoBehaviour
             c.a = alpha;
             lr.startColor = lr.endColor = c;
 
-            var pts = new Vector3[SEG];
-            for (int k = 0; k < SEG; k++)
+            var pts = new Vector3[seg];
+            for (int k = 0; k < seg; k++)
             {
-                double a = k / (double)SEG * 2 * System.Math.PI;
+                double a = k / (double)seg * 2 * System.Math.PI;
                 pts[k] = new Vector3(
                     (float)(System.Math.Cos(a) * r * UnitsPerKm), 0,
                     (float)(System.Math.Sin(a) * r * UnitsPerKm));
@@ -60,7 +68,7 @@ public class OrbitRenderer : MonoBehaviour
         }
         built = true;
     }
-    
+
     void Overview()
     {
         var sun = sim.Bodies[0];
@@ -72,6 +80,7 @@ public class OrbitRenderer : MonoBehaviour
         sim.spaceCamera.position = sun.position + new Vector3d(0, h, -h * 0.35);
         sim.spaceCamera.LookAt(sun.position);
     }
+
     void Update()
     {
         if (sim == null || sim.Bodies == null) return;
@@ -91,7 +100,7 @@ public class OrbitRenderer : MonoBehaviour
             roots[i].position = center.ToVector3();
 
             double d = (sim.Bodies[i].position - cam).Magnitude * UnitsPerKm;
-            lines[i].widthMultiplier = Mathf.Max(0.05f, (float)(d * widthFactor));
+            lines[i].widthMultiplier = Mathf.Max(0.02f, (float)(d * widthFactor));
         }
     }
 

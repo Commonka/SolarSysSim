@@ -10,6 +10,11 @@ public class CelestialBody
     public Vector3d position;  // км
     public Vector3d velocity;  // км/с
 
+    // Вращение
+    public double rotationPeriod;   // с, сидерический период (0 = не вращается)
+    public double axialTilt;        // град, наклон оси к плоскости орбиты (эклиптики)
+    public double rotationPhaseDeg; // град, начальный угол поворота
+
     [NonSerialized] public Transform visual; // сфера на сцене
     [NonSerialized] public Color color = Color.white;
 

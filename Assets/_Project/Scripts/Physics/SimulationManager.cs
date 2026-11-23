@@ -10,6 +10,8 @@ public class SimulationManager : MonoBehaviour
     public Light sunLight;
     public Material sunMaterial;     // Sun.mat
     public Material planetMaterial;  // обычный URP Lit, копия на каждое тело
+    public Material earthMaterial;   // Earth.mat (шейдер SolarSys/Earth); если пусто, Земля как остальные
+    public bool useTestGrid = true;  // ВРЕМЕННО: сетка координат на планетах без своего материала
 
     const double UnitsPerKm = 0.001; // 1 единица Unity = 1000 км
 
@@ -65,14 +67,66 @@ public class SimulationManager : MonoBehaviour
                 r.shadowCastingMode = ShadowCastingMode.Off; // иначе Солнце затенит планеты
                 r.receiveShadows = false;
             }
+            else if (b.name == "Earth" && earthMaterial != null)
+            {
+                r.material = new Material(earthMaterial); // свой экземпляр (пригодится для карты повреждений)
+            }
             else
             {
                 var m = new Material(planetMaterial); // свой экземпляр на тело
-                m.SetColor("_BaseColor", b.color);
+                if (useTestGrid)
+                {
+                    m.SetColor("_BaseColor", Color.white);
+                    m.SetTexture("_BaseMap", MakeGridTexture(b.color));
+                }
+                else
+                {
+                    m.SetColor("_BaseColor", b.color);
+                }
                 r.material = m;
             }
             b.visual = go.transform;
         }
+    }
+
+    // Тестовая сетка: клетки 30°, красный шов u=0, зелёный экватор,
+    // белая северная шапка, тёмная южная.
+    static Texture2D MakeGridTexture(Color baseCol)
+    {
+        const int W = 576, H = 288; // 48 px = 30°
+        var tex = new Texture2D(W, H, TextureFormat.RGBA32, true);
+        var px = new Color[W * H];
+        for (int y = 0; y < H; y++)
+        {
+            for (int x = 0; x < W; x++)
+            {
+                Color c = baseCol;
+                if (((x / 48) + (y / 48)) % 2 == 0) c *= 0.75f;
+                if (x % 48 < 2 || y % 48 < 2) c = baseCol * 0.2f;
+                if (Mathf.Abs(y - 144) < 3) c = Color.green;
+                if (x < 4) c = Color.red;
+                if (y >= H - 14) c = Color.white;
+                if (y < 14) c = new Color(0.1f, 0.1f, 0.1f);
+                c.a = 1f;
+                px[y * W + x] = c;
+            }
+        }
+        tex.SetPixels(px);
+        tex.wrapMode = TextureWrapMode.Repeat;
+        tex.Apply(true);
+        return tex;
+    }
+
+    // Поворот тела: наклон оси (фиксирован в пространстве) * вращение вокруг своей оси.
+    // Угол берём из simTime в double, поэтому он не накапливает ошибку при любой скорости.
+    Quaternion BodyRotation(CelestialBody b)
+    {
+        if (b.rotationPeriod <= 0) return Quaternion.identity;
+        double turns = simTime / b.rotationPeriod;
+        double frac = turns - System.Math.Floor(turns);
+        float angle = (float)(b.rotationPhaseDeg - frac * 360.0);
+        Quaternion tilt = Quaternion.AngleAxis((float)-b.axialTilt, Vector3.forward);
+        return tilt * Quaternion.AngleAxis(angle, Vector3.up);
     }
 
     void RemoveDrift()
@@ -140,6 +194,7 @@ public class SimulationManager : MonoBehaviour
         {
             Vector3d rel = (Bodies[i].position - spaceCamera.position) * UnitsPerKm;
             Bodies[i].visual.position = rel.ToVector3();
+            Bodies[i].visual.rotation = BodyRotation(Bodies[i]);
         }
         spaceCamera.transform.position = Vector3.zero;
 
