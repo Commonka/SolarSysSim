@@ -30,8 +30,8 @@ public static class PlanetMesh
             for (int x = 0; x < seg; x++)
             {
                 int i = y * (seg + 1) + x;
-                tris.Add(i); tris.Add(i + seg + 1); tris.Add(i + 1);
-                tris.Add(i + 1); tris.Add(i + seg + 1); tris.Add(i + seg + 2);
+                tris.Add(i); tris.Add(i + 1); tris.Add(i + seg + 1);
+                tris.Add(i + 1); tris.Add(i + seg + 2); tris.Add(i + seg + 1);
             }
         var m = new Mesh { name = $"Sphere_{seg}" };
         m.SetVertices(verts); m.SetNormals(norms); m.SetUVs(0, uvs); m.SetTriangles(tris, 0);

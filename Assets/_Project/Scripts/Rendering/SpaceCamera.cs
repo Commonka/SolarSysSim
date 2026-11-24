@@ -23,9 +23,10 @@ public class SpaceCamera : MonoBehaviour
         var kb = Keyboard.current;
         var mouse = Mouse.current;
         if (kb == null || mouse == null) return;
-
+        bool ui = HudController.PointerOverUI;
+        
         // Поворот: правая кнопка мыши
-        if (mouse.rightButton.isPressed)
+        if (mouse.rightButton.isPressed && !ui)
         {
             Vector2 d = mouse.delta.ReadValue();
             yaw += d.x * lookSensitivity;
@@ -39,7 +40,7 @@ public class SpaceCamera : MonoBehaviour
         if (kb.digit0Key.wasPressedThisFrame) speedMultiplier = digitMultipliers[9];
 
         // Колёсико мыши: плавная подстройка множителя
-        float scroll = mouse.scroll.ReadValue().y;
+        float scroll = ui ? 0f : mouse.scroll.ReadValue().y;
         if (Mathf.Abs(scroll) > 0.01f)
         {
             speedMultiplier *= System.Math.Pow(scrollStep, Mathf.Sign(scroll));
@@ -84,13 +85,4 @@ public class SpaceCamera : MonoBehaviour
         pitch = e.x > 180 ? e.x - 360 : e.x;
     }
 
-    void OnGUI()
-    {
-        float s = Mathf.Max(0.5f, Screen.height / 1080f);
-        GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
-        float virtualHeight = Screen.height / s;
-        GUI.Label(new Rect(10, virtualHeight - 50, 700, 40),
-            $"Скорость камеры: {currentSpeed:N0} км/с  (множитель ×{speedMultiplier:G3})\n" +
-            "1-0: множитель, колёсико: подстройка, R: сброс, Ctrl: ×5, Пробел/Shift: вверх/вниз");
-    }
 }

@@ -434,6 +434,7 @@ GameObject:
   - component: {fileID: 549064796}
   - component: {fileID: 549064797}
   - component: {fileID: 549064798}
+  - component: {fileID: 549064799}
   m_Layer: 0
   m_Name: SimulationManager
   m_TagString: Untagged
@@ -491,9 +492,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OrbitRenderer
   sim: {fileID: 549064792}
-  showOrbits: 1
+  showOrbits: 0
   widthFactor: 0.003
   alpha: 0.35
+  dashesPlanet: 220
+  dashesMoon: 80
   tint: {r: 0.6, g: 0.65, b: 0.7, a: 1}
 --- !u!114 &549064795
 MonoBehaviour:
@@ -555,7 +558,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 549064791}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 616a6b9242f022148bb825b003fe6685, type: 3}
   m_Name: 
@@ -603,10 +606,10 @@ MonoBehaviour:
     segments: 0
     axialTilt: 0.03
     oblateness: 0
-    ring: 0
-    ringInner: 0
-    ringOuter: 0
-    ringMaterial: {fileID: 0}
+    ring: 1
+    ringInner: 1.28
+    ringOuter: 2.35
+    ringMaterial: {fileID: 2100000, guid: 831ae04cb47c08f469d97c951fe06e5c, type: 2}
   - bodyName: Uranus
     material: {fileID: 2100000, guid: 6ea2853c58d0c324cb032cb524093456, type: 2}
     segments: 0
@@ -634,6 +637,38 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+--- !u!114 &549064799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ebb30cb220da1428f5bd741689f5c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AsteroidBelt
+  sim: {fileID: 549064792}
+  shader: {fileID: 0}
+  count: 100000
+  seed: 12345
+  show: 1
+  innerAU: 2.1
+  outerAU: 3.3
+  meanEcc: 0.12
+  maxEcc: 0.35
+  inclSigmaDeg: 7
+  maxInclDeg: 30
+  gapWidthAU: 0.015
+  gapDepth: 0.97
+  minRadiusKm: 0.5
+  maxRadiusKm: 120
+  sizeExaggeration: 500
+  minPixels: 1.5
+  farAlpha: 0.45
+  brightness: 2
+  tint: {r: 0.55, g: 0.5, b: 0.45, a: 1}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

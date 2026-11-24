@@ -21,6 +21,10 @@ public class SimulationManager : MonoBehaviour
     public int maxStepsPerFrame = 2000;
 
     public CelestialBody[] Bodies { get; private set; }
+    public double SimTime => simTime;
+    public int FollowIndex => followIndex;
+    public string IntegratorName => integrator != null ? integrator.Name : "";
+    public double EnergyDrift => (Gravity.TotalEnergy(Bodies) - initialEnergy) / System.Math.Abs(initialEnergy);
     IIntegrator integrator;
     double simTime, initialEnergy;
     int followIndex = -1;
@@ -203,13 +207,13 @@ public class SimulationManager : MonoBehaviour
         };
     }
 
-    void SetFollow(int i)
+    public void SetFollow(int i)
     {
         followIndex = i;
         if (i >= 0) lastFollowPos = Bodies[i].position;
     }
 
-    void GoTo(int i)
+    public void GoTo(int i)
     {
         var b = Bodies[i];
         spaceCamera.position = b.position + new Vector3d(-b.radius * 4, b.radius * 1.5, 0);
@@ -281,39 +285,5 @@ public class SimulationManager : MonoBehaviour
         
     }
 
-    void OnGUI()
-    {
-        if (Bodies == null) return;
-
-        float s = Mathf.Max(0.5f, Screen.height / 1080f);
-        GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
-        float virtualWidth = Screen.width / s;
-
-        double e = Gravity.TotalEnergy(Bodies);
-        double drift = (e - initialEnergy) / System.Math.Abs(initialEnergy);
-        string follow = followIndex >= 0 ? Bodies[followIndex].name : "свободная";
-        GUI.Label(new Rect(10, 10, 500, 110),
-            $"Integrator: {integrator.Name}\nДни: {simTime / Constants.Day:F1}\nДрейф энергии: {drift:E3}\nКамера: {follow}");
-
-        GUILayout.BeginArea(new Rect(virtualWidth - 290, 10, 280, 800), GUI.skin.box);
-
-        GUILayout.Label("Камера следует за:");
-        for (int i = 0; i < Bodies.Length; i++)
-        {
-            GUILayout.BeginHorizontal();
-            bool on = followIndex == i;
-            if (GUILayout.Toggle(on, Bodies[i].name, GUI.skin.button) && !on) SetFollow(i);
-            if (GUILayout.Button("К телу", GUILayout.Width(70))) GoTo(i);
-            GUILayout.EndHorizontal();
-        }
-        bool free = followIndex < 0;
-        if (GUILayout.Toggle(free, "Свободная камера", GUI.skin.button) && !free) SetFollow(-1);
-
-        GUILayout.Space(12);
-        GUILayout.Label($"Скорость времени: {timeScale / Constants.Day:F3} сут/с");
-        for (int i = 0; i < speedLabels.Length; i++)
-            if (GUILayout.Button(speedLabels[i])) timeScale = speedValues[i];
-
-        GUILayout.EndArea();
-    }
+    
 }

@@ -30,7 +30,8 @@ public class PlanetVisuals : MonoBehaviour
             if (e == null || b.visual == null) continue;
 
             var mf = b.visual.GetComponent<MeshFilter>();
-            if (mf != null) mf.sharedMesh = PlanetMesh.Sphere(e.segments);
+            int seg = e.segments > 0 ? e.segments : 96;
+            if (mf != null) mf.sharedMesh = PlanetMesh.Sphere(seg);
 
             var r = b.visual.GetComponent<MeshRenderer>();
             if (r != null && e.material != null) r.sharedMaterial = e.material;

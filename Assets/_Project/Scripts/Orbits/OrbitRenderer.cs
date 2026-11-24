@@ -7,9 +7,12 @@ using UnityEngine.InputSystem;
 public class OrbitRenderer : MonoBehaviour
 {
     public SimulationManager sim;
-    public bool showOrbits = true;
-    public float widthFactor = 0.003f;   // толщина относительно расстояния
-    public float alpha = 0.35f;          // прозрачность (приглушённость)
+    public bool showOrbits = false;
+    public float widthFactor = 0.0015f;   // тоньше
+    public float alpha = 0.18f;           // менее заметные
+    public float opacityMul = 1f;
+    public int dashesPlanet = 220;        // штрихов на орбиту
+    public int dashesMoon = 80;    
     public Color tint = new Color(0.60f, 0.65f, 0.70f); // холодный серый оттенок
 
     const double UnitsPerKm = 0.001;
@@ -50,6 +53,11 @@ public class OrbitRenderer : MonoBehaviour
             lr.numCornerVertices = 4;
             lr.sharedMaterial = mat;
             lr.startWidth = lr.endWidth = 1f;
+            lr.numCapVertices = 4;
+            lr.textureMode = LineTextureMode.Stretch;
+            var pb = new MaterialPropertyBlock();
+            pb.SetFloat("_Dashes", isMoon ? dashesMoon : dashesPlanet);
+            lr.SetPropertyBlock(pb);
 
             Color c = Color.Lerp(bodies[i].color, tint, 0.55f);
             c.a = alpha;
@@ -69,7 +77,7 @@ public class OrbitRenderer : MonoBehaviour
         built = true;
     }
 
-    void Overview()
+    public void Overview()
     {
         var sun = sim.Bodies[0];
         double h = 0;
@@ -85,6 +93,7 @@ public class OrbitRenderer : MonoBehaviour
     {
         if (sim == null || sim.Bodies == null) return;
         if (!built) Build();
+        mat.SetColor("_Color", new Color(1, 1, 1, opacityMul));
 
         if (Keyboard.current != null && Keyboard.current.oKey.wasPressedThisFrame)
             showOrbits = !showOrbits;
@@ -104,12 +113,5 @@ public class OrbitRenderer : MonoBehaviour
         }
     }
 
-    void OnGUI()
-    {
-        float s = Mathf.Max(0.5f, Screen.height / 1080f);
-        GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
-        showOrbits = GUI.Toggle(new Rect(10, 130, 220, 28), showOrbits,
-            "  Орбиты (O)", GUI.skin.button);
-        if (GUI.Button(new Rect(10, 165, 220, 28), "  Обзор системы")) Overview();
-    }
+
 }
