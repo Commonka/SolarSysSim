@@ -433,6 +433,7 @@ GameObject:
   - component: {fileID: 549064795}
   - component: {fileID: 549064796}
   - component: {fileID: 549064797}
+  - component: {fileID: 549064798}
   m_Layer: 0
   m_Name: SimulationManager
   m_TagString: Untagged
@@ -547,6 +548,92 @@ MonoBehaviour:
   mieScale: 0.4
   mieG: 0.76
   extinction: 0.8
+--- !u!114 &549064798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 616a6b9242f022148bb825b003fe6685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetVisuals
+  sim: {fileID: 549064792}
+  entries:
+  - bodyName: Mercury
+    material: {fileID: 2100000, guid: e24629e4789478b44ab2257bde9f8cb0, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
+  - bodyName: Venus
+    material: {fileID: 2100000, guid: 1e3113c6a7232eb48817750dd5f3f99c, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
+  - bodyName: Mars
+    material: {fileID: 2100000, guid: 0be7830925da58542a9d503782a8be6d, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
+  - bodyName: Jupiter
+    material: {fileID: 2100000, guid: 4e67b6f6b5d943b4b849a03691a95e70, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
+  - bodyName: Saturn
+    material: {fileID: 2100000, guid: 6cfa4b698c5da924e83bd02187731b76, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
+  - bodyName: Uranus
+    material: {fileID: 2100000, guid: 6ea2853c58d0c324cb032cb524093456, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
+  - bodyName: Moon
+    material: {fileID: 2100000, guid: f4d274d2e83a2944786c65e06dc11431, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
+  - bodyName: 'Neptune '
+    material: {fileID: 2100000, guid: c2ac5ffd32ff0d7498bac72fbe8eb66c, type: 2}
+    segments: 0
+    axialTilt: 0.03
+    oblateness: 0
+    ring: 0
+    ringInner: 0
+    ringOuter: 0
+    ringMaterial: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
