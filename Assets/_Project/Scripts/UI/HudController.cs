@@ -39,6 +39,7 @@ public class HSlider : VisualElement
         RegisterCallback<PointerCaptureOutEvent>(e => Dragging = false);
     }
 
+    
     void Apply(float x) => Set(Mathf.Clamp01(x / Mathf.Max(resolvedStyle.width, 1f)), true);
 
     public void Set(float v, bool notify)
