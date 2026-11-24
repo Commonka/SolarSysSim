@@ -435,6 +435,7 @@ GameObject:
   - component: {fileID: 549064797}
   - component: {fileID: 549064798}
   - component: {fileID: 549064799}
+  - component: {fileID: 549064800}
   m_Layer: 0
   m_Name: SimulationManager
   m_TagString: Untagged
@@ -495,6 +496,7 @@ MonoBehaviour:
   showOrbits: 0
   widthFactor: 0.003
   alpha: 0.35
+  opacityMul: 1
   dashesPlanet: 220
   dashesMoon: 80
   tint: {r: 0.6, g: 0.65, b: 0.7, a: 1}
@@ -669,6 +671,22 @@ MonoBehaviour:
   farAlpha: 0.45
   brightness: 2
   tint: {r: 0.55, g: 0.5, b: 0.45, a: 1}
+--- !u!114 &549064800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b872a063aa3871940ba200125f0b6528, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HudController
+  sim: {fileID: 549064792}
+  orbits: {fileID: 0}
+  belt: {fileID: 0}
+  atmosphere: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
