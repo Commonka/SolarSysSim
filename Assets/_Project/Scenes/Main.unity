@@ -687,6 +687,7 @@ MonoBehaviour:
   orbits: {fileID: 0}
   belt: {fileID: 0}
   atmosphere: {fileID: 0}
+  panelSettings: {fileID: 11400000, guid: 59659be6fc93f38408be6a79957c2cf8, type: 2}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

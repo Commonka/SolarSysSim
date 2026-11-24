@@ -8,6 +8,7 @@ public class SunGlare : MonoBehaviour
     public float sizeInDisks = 10f;       // радиус свечения в угловых радиусах диска
     [ColorUsage(false, true)] public Color color = new Color(1f, 0.95f, 0.85f);
     public float intensity = 5f;
+    public bool show = true;              // тумблер из HUD
 
     const double UnitsPerKm = 0.001;
     Transform quad;
@@ -37,6 +38,7 @@ public class SunGlare : MonoBehaviour
     void LateUpdate()
     {
         if (sim == null || sim.Bodies == null || quad == null) return;
+        if (!show) { quad.gameObject.SetActive(false); return; }
         var sun = sim.Bodies[0];
         if (sun.visual == null) return;
 

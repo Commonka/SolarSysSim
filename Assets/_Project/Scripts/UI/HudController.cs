@@ -39,7 +39,6 @@ public class HSlider : VisualElement
         RegisterCallback<PointerCaptureOutEvent>(e => Dragging = false);
     }
 
-    
     void Apply(float x) => Set(Mathf.Clamp01(x / Mathf.Max(resolvedStyle.width, 1f)), true);
 
     public void Set(float v, bool notify)
@@ -60,6 +59,12 @@ public class HudController : MonoBehaviour
     public OrbitRenderer orbits;
     public AsteroidBelt belt;
     public AtmosphereShell atmosphere;
+    public SunGlare sunGlare;
+    public SunLensFlare sunLensFlare;
+    public SkySetup sky;
+
+    [Tooltip("Panel Settings с назначенной темой. Перетащи сюда Assets/HudPanel.asset")]
+    public PanelSettings panelSettings;
 
     static readonly Color Bg = new Color(0.03f, 0.04f, 0.06f, 0.88f);
     static readonly Color Line = new Color(1, 1, 1, 0.12f);
@@ -77,9 +82,14 @@ public class HudController : MonoBehaviour
     VisualElement earthGroup, bodyList;
     string openTab;
     bool barOver, panelOver, paused, objectsBuilt;
+    bool stars = true;
     double speed = 60;
     int sel;
     float infoTimer;
+
+    // Земля для земных слайдеров — не зависит от выбранного тела
+    CelestialBody earth;
+    Material earthMat;
 
     void Awake()
     {
@@ -87,14 +97,21 @@ public class HudController : MonoBehaviour
         if (!orbits) orbits = FindFirstObjectByType<OrbitRenderer>();
         if (!belt) belt = FindFirstObjectByType<AsteroidBelt>();
         if (!atmosphere) atmosphere = FindFirstObjectByType<AtmosphereShell>();
+        if (!sunGlare) sunGlare = FindFirstObjectByType<SunGlare>();
+        if (!sunLensFlare) sunLensFlare = FindFirstObjectByType<SunLensFlare>();
+        if (!sky) sky = FindFirstObjectByType<SkySetup>();
 
-        var ps = ScriptableObject.CreateInstance<PanelSettings>();
-        ps.scaleMode = PanelScaleMode.ScaleWithScreenSize;
-        ps.referenceResolution = new Vector2Int(1920, 1080);
-        ps.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
-        ps.match = 1f;
-        doc = gameObject.AddComponent<UIDocument>();
-        doc.panelSettings = ps;
+        if (!panelSettings)
+        {
+            Debug.LogError("HudController: не назначен Panel Settings. " +
+                           "Перетащи Assets/HudPanel.asset в поле Panel Settings в инспекторе.", this);
+            enabled = false;
+            return;
+        }
+
+        doc = GetComponent<UIDocument>();
+        if (!doc) doc = gameObject.AddComponent<UIDocument>();
+        doc.panelSettings = panelSettings;
     }
 
     void Start() => Build();
@@ -123,7 +140,8 @@ public class HudController : MonoBehaviour
     }
 
     HSlider AddSlider(VisualElement parent, string title, float lo, float hi, Func<float> get,
-                      Action<float> set, Func<float, string> fmt, bool log = false, int steps = 0)
+                      Action<float> set, Func<float, string> fmt, bool log = false, int steps = 0,
+                      Func<bool> when = null)
     {
         float Map(float t) => log ? lo * Mathf.Pow(hi / lo, t) : Mathf.Lerp(lo, hi, t);
         float Inv(float v) => log ? Mathf.Log(Mathf.Clamp(v, lo, hi) / lo) / Mathf.Log(hi / lo)
@@ -143,6 +161,7 @@ public class HudController : MonoBehaviour
         syncs.Add(() =>
         {
             if (s.Dragging) return;
+            if (when != null && !when()) return;   // не синкать скрытые/неприменимые слайдеры
             float v = get();
             s.Set(Inv(v), false);
             val.text = fmt(v);
@@ -161,11 +180,64 @@ public class HudController : MonoBehaviour
 
     void ApplySpeed() { if (sim) sim.timeScale = paused ? 0 : speed; }
 
+    void ApplyStars()
+    {
+        var cam = sim && sim.spaceCamera ? sim.spaceCamera.GetComponent<Camera>() : null;
+        if (stars && sky && sky.skyMaterial)
+        {
+            RenderSettings.skybox = sky.skyMaterial;
+            if (cam) cam.clearFlags = CameraClearFlags.Skybox;
+        }
+        else
+        {
+            RenderSettings.skybox = null;
+            if (cam) cam.clearFlags = CameraClearFlags.SolidColor; // фон камеры уже чёрный
+        }
+    }
+
+    // ---------- земной материал (только SolarSys/Earth) ----------
+    Material EarthMat()
+    {
+        if (earthMat != null) return earthMat;
+        if (earth == null && sim != null && sim.Bodies != null)
+            earth = System.Array.Find(sim.Bodies, b => b.name == "Earth");
+        if (earth == null || earth.visual == null) return null;
+        var r = earth.visual.GetComponent<MeshRenderer>();
+        if (r == null) return null;
+        earthMat = r.material;   // у Земли уже instance-материал из SimulationManager
+        return earthMat;
+    }
+
+    float GetEarthFloat(string prop, float fallback)
+    {
+        var m = EarthMat();
+        return m != null && m.HasProperty(prop) ? m.GetFloat(prop) : fallback;
+    }
+
+    void SetEarthFloat(string prop, float value)
+    {
+        var m = EarthMat();
+        if (m != null && m.HasProperty(prop)) m.SetFloat(prop, value);
+    }
+
+    bool EarthSelected()
+    {
+        return earth != null && sim != null && sim.Bodies != null
+               && sel >= 0 && sel < sim.Bodies.Length && sim.Bodies[sel] == earth;
+    }
+
     // ---------- построение ----------
     void Build()
     {
         root = doc.rootVisualElement;
         root.pickingMode = PickingMode.Ignore;
+
+        // Страховка: растягиваем root на весь экран вручную,
+        // чтобы геометрия HUD не зависела от темы в PanelSettings.
+        root.style.position = Position.Absolute;
+        root.style.left = 0; root.style.top = 0;
+        root.style.right = 0; root.style.bottom = 0;
+
         root.style.color = Txt; root.style.fontSize = 15;
 
         // нижняя панель
@@ -196,12 +268,12 @@ public class HudController : MonoBehaviour
             ApplySpeed();
         };
         bar.Add(speedSlider);
-        speed = sim.timeScale > 0 ? sim.timeScale : 60;
+        speed = sim && sim.timeScale > 0 ? sim.timeScale : 60;
         speedSlider.Set(Mathf.Clamp01(Mathf.Log10((float)speed) / 8f), false);
         speedLabel.text = FmtSpeed(speed);
 
         var sp1 = new VisualElement(); sp1.style.flexGrow = 1; bar.Add(sp1);
-        foreach (var t in new[] { ("view", "вид"), ("objects", "тела"), ("sim", "расчёт") })
+        foreach (var t in new[] { ("view", "вид"), ("graphics", "графика"), ("objects", "тела"), ("sim", "расчёт") })
         {
             string key = t.Item1;
             var chip = Chip(bar, t.Item2, _ => { openTab = openTab == key ? null : key; ShowPage(); }, () => openTab == key);
@@ -222,7 +294,7 @@ public class HudController : MonoBehaviour
         panel.RegisterCallback<PointerEnterEvent>(e => panelOver = true);
         panel.RegisterCallback<PointerLeaveEvent>(e => panelOver = false);
 
-        BuildViewPage(); BuildObjectsPage(); BuildSimPage();
+        BuildViewPage(); BuildGraphicsPage(); BuildObjectsPage(); BuildSimPage();
         root.Add(panel); root.Add(bar);
         ShowPage();
     }
@@ -254,14 +326,37 @@ public class HudController : MonoBehaviour
         Chip(chips, "Скриншот", _ => StartCoroutine(Photo()));
         p.Add(chips);
 
-        AddSlider(p, "Прозрачность орбит", 0.1f, 3f, () => orbits.opacityMul, v => orbits.opacityMul = v, v => $"×{v:F1}");
-        AddSlider(p, "Яркость пояса", 0.2f, 6f, () => belt.brightness, v => belt.brightness = v, v => $"{v:F1}");
-        AddSlider(p, "Размер астероидов", 1f, 500f, () => belt.sizeExaggeration, v => belt.sizeExaggeration = v, v => $"×{v:F0}", true);
-        AddSlider(p, "Мин. размер точки", 1f, 6f, () => belt.minPixels, v => belt.minPixels = v, v => $"{v:F1} px");
         AddSlider(p, "Поле зрения", 20f, 100f, () => sim.spaceCamera.GetComponent<Camera>().fieldOfView,
                   v => sim.spaceCamera.GetComponent<Camera>().fieldOfView = v, v => $"{v:F0}°");
         AddSlider(p, "Скорость камеры", 0.001f, 1000f, () => (float)sim.spaceCamera.speedMultiplier,
                   v => sim.spaceCamera.speedMultiplier = v, v => $"×{v:G3}", true);
+    }
+
+    void BuildGraphicsPage()
+    {
+        var p = NewPage("graphics");
+        var chips = new VisualElement(); chips.style.flexDirection = FlexDirection.Row;
+        chips.style.width = Length.Percent(100); chips.style.marginBottom = 8;
+        if (sunGlare) Chip(chips, "Блики солнца", _ => sunGlare.show = !sunGlare.show, () => sunGlare.show);
+        if (sunLensFlare) Chip(chips, "Переливы линз", _ => sunLensFlare.show = !sunLensFlare.show, () => sunLensFlare.show);
+        if (atmosphere) Chip(chips, "Атмосфера", _ => atmosphere.show = !atmosphere.show, () => atmosphere.show);
+        if (sky) Chip(chips, "Звёздное небо", _ => { stars = !stars; ApplyStars(); }, () => stars);
+        p.Add(chips);
+
+        if (sunGlare)
+        {
+            AddSlider(p, "Яркость бликов", 0f, 20f, () => sunGlare.intensity, v => sunGlare.intensity = v, v => $"{v:F1}");
+            AddSlider(p, "Размер свечения", 1f, 30f, () => sunGlare.sizeInDisks, v => sunGlare.sizeInDisks = v, v => $"×{v:F0}");
+        }
+        if (sunLensFlare)
+            AddSlider(p, "Яркость переливов", 0f, 5f, () => sunLensFlare.intensity, v => sunLensFlare.intensity = v, v => $"{v:F2}");
+        if (atmosphere)
+            AddSlider(p, "Свечение атмосферы", 0f, 20f, () => atmosphere.sunIntensity, v => atmosphere.sunIntensity = v, v => $"{v:F1}");
+
+        AddSlider(p, "Прозрачность орбит", 0.1f, 3f, () => orbits.opacityMul, v => orbits.opacityMul = v, v => $"×{v:F1}");
+        AddSlider(p, "Яркость пояса", 0.2f, 6f, () => belt.brightness, v => belt.brightness = v, v => $"{v:F1}");
+        AddSlider(p, "Размер астероидов", 1f, 500f, () => belt.sizeExaggeration, v => belt.sizeExaggeration = v, v => $"×{v:F0}", true);
+        AddSlider(p, "Мин. размер точки", 1f, 6f, () => belt.minPixels, v => belt.minPixels = v, v => $"{v:F1} px");
     }
 
     void BuildObjectsPage()
@@ -285,11 +380,14 @@ public class HudController : MonoBehaviour
         earthGroup.style.flexDirection = FlexDirection.Row; earthGroup.style.flexWrap = Wrap.Wrap;
         earthGroup.style.width = Length.Percent(100);
         p.Add(earthGroup);
-        Material EM() => sim.Bodies[sel].visual.GetComponent<MeshRenderer>().material;
-        AddSlider(earthGroup, "Рельеф", 0f, 3f, () => EM().GetFloat("_BumpStrength"), v => EM().SetFloat("_BumpStrength", v), v => $"{v:F2}");
-        AddSlider(earthGroup, "Облака", 0f, 2f, () => EM().GetFloat("_CloudBrightness"), v => EM().SetFloat("_CloudBrightness", v), v => $"{v:F2}");
-        if (atmosphere)
-            AddSlider(earthGroup, "Атмосфера", 0f, 20f, () => atmosphere.sunIntensity, v => atmosphere.sunIntensity = v, v => $"{v:F1}");
+
+        // Земные слайдеры читают/пишут ТОЛЬКО материал Земли и только когда она выбрана.
+        AddSlider(earthGroup, "Рельеф", 0f, 3f,
+                  () => GetEarthFloat("_BumpStrength", 1f), v => SetEarthFloat("_BumpStrength", v),
+                  v => $"{v:F2}", when: EarthSelected);
+        AddSlider(earthGroup, "Облака", 0f, 2f,
+                  () => GetEarthFloat("_CloudBrightness", 1f), v => SetEarthFloat("_CloudBrightness", v),
+                  v => $"{v:F2}", when: EarthSelected);
     }
 
     void BuildSimPage()
@@ -317,6 +415,7 @@ public class HudController : MonoBehaviour
             }, () => sel == idx);
         }
         sel = Mathf.Max(sim.FollowIndex, 0);
+        earth = System.Array.Find(sim.Bodies, b => b.name == "Earth");
         objectsBuilt = true;
     }
 
@@ -351,11 +450,7 @@ public class HudController : MonoBehaviour
         subLabel.text = $"T+ {days:F1} сут";
         pauseLabel.text = paused ? "Пуск" : "Пауза";
 
-        foreach (var s in syncs)
-        {
-            if (openTab == null && s.Target == this && false) continue;
-            s();
-        }
+        foreach (var s in syncs) s();
 
         infoTimer -= Time.unscaledDeltaTime;
         if (infoTimer <= 0f)

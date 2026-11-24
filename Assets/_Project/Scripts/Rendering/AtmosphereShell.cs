@@ -6,6 +6,7 @@ public class AtmosphereShell : MonoBehaviour
 {
     public SimulationManager sim;
     public string bodyName = "Earth";
+    public bool show = true;              // тумблер из HUD
 
     [Header("Геометрия")]
     public float heightKm = 80f;          // толщина оболочки
@@ -44,6 +45,8 @@ public class AtmosphereShell : MonoBehaviour
     {
         if (sim == null || sim.Bodies == null) return;
         if (shell == null) { Build(); if (shell == null) return; }
+        if (shell.gameObject.activeSelf != show) shell.gameObject.SetActive(show);
+        if (!show) return;
         if (body.visual == null) return;
 
         float rp = (float)(body.radius * UnitsPerKm);

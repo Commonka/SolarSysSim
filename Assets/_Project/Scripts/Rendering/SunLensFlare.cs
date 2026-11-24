@@ -5,6 +5,7 @@ public class SunLensFlare : MonoBehaviour
 {
     public SimulationManager sim;
     public float intensity = 1.5f;
+    public bool show = true;              // тумблер из HUD
 
     struct Ghost
     {
@@ -84,6 +85,11 @@ public class SunLensFlare : MonoBehaviour
     void LateUpdate()
     {
         if (sim == null || sim.Bodies == null || quads == null) return;
+        if (!show)
+        {
+            for (int i = 0; i < quads.Length; i++) quads[i].gameObject.SetActive(false);
+            return;
+        }
 
         Vector3 vp = cam.WorldToViewportPoint(sim.Bodies[0].visual.position);
         float fade = 0f;
