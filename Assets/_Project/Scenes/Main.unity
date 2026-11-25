@@ -517,6 +517,7 @@ MonoBehaviour:
   sizeInDisks: 10
   color: {r: 1, g: 0.95, b: 0.85, a: 1}
   intensity: 5
+  show: 1
 --- !u!114 &549064796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,6 +532,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SunLensFlare
   sim: {fileID: 549064792}
   intensity: 1
+  show: 1
 --- !u!114 &549064797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,6 +547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AtmosphereShell
   sim: {fileID: 549064792}
   bodyName: Earth
+  show: 1
   heightKm: 150
   heightR: 0.018
   heightM: 0.004
@@ -576,6 +579,13 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+    mainMap: {fileID: 2800000, guid: ec6a17c060375fd41a60c24303d8ab6b, type: 3}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
   - bodyName: Venus
     material: {fileID: 2100000, guid: 1e3113c6a7232eb48817750dd5f3f99c, type: 2}
     segments: 0
@@ -585,6 +595,13 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+    mainMap: {fileID: 2800000, guid: b14ff5f91b7ef4e40bef75fe9ad36b9e, type: 3}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
   - bodyName: Mars
     material: {fileID: 2100000, guid: 0be7830925da58542a9d503782a8be6d, type: 2}
     segments: 0
@@ -594,6 +611,13 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+    mainMap: {fileID: 2800000, guid: 05cbe40af3d82ef4180dd53e43f5bbf7, type: 3}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
   - bodyName: Jupiter
     material: {fileID: 2100000, guid: 4e67b6f6b5d943b4b849a03691a95e70, type: 2}
     segments: 0
@@ -603,6 +627,13 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+    mainMap: {fileID: 2800000, guid: 1598e51bca19cfb4881a1f61a18b9f7f, type: 3}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
   - bodyName: Saturn
     material: {fileID: 2100000, guid: 6cfa4b698c5da924e83bd02187731b76, type: 2}
     segments: 0
@@ -612,6 +643,13 @@ MonoBehaviour:
     ringInner: 1.28
     ringOuter: 2.35
     ringMaterial: {fileID: 2100000, guid: 831ae04cb47c08f469d97c951fe06e5c, type: 2}
+    mainMap: {fileID: 2800000, guid: 147f42eea3cf2454083583eef41cab12, type: 3}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
   - bodyName: Uranus
     material: {fileID: 2100000, guid: 6ea2853c58d0c324cb032cb524093456, type: 2}
     segments: 0
@@ -621,6 +659,13 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+    mainMap: {fileID: 2800000, guid: f277eb4d73aa7fc4bb37cbfd524ca578, type: 3}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
   - bodyName: Moon
     material: {fileID: 2100000, guid: f4d274d2e83a2944786c65e06dc11431, type: 2}
     segments: 0
@@ -630,6 +675,13 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+    mainMap: {fileID: 0}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
   - bodyName: 'Neptune '
     material: {fileID: 2100000, guid: c2ac5ffd32ff0d7498bac72fbe8eb66c, type: 2}
     segments: 0
@@ -639,6 +691,13 @@ MonoBehaviour:
     ringInner: 0
     ringOuter: 0
     ringMaterial: {fileID: 0}
+    mainMap: {fileID: 2800000, guid: 6341905f8615a8c46a2ed921e2e3c8d5, type: 3}
+    normalMap: {fileID: 0}
+    bumpStrength: 1
+    tintColor: {r: 1, g: 1, b: 1, a: 1}
+    lonOffset: 0
+    rimIntensity: 0
+    rimColor: {r: 0.4, g: 0.6, b: 1, a: 1}
 --- !u!114 &549064799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -687,6 +746,9 @@ MonoBehaviour:
   orbits: {fileID: 0}
   belt: {fileID: 0}
   atmosphere: {fileID: 0}
+  sunGlare: {fileID: 0}
+  sunLensFlare: {fileID: 0}
+  sky: {fileID: 0}
   panelSettings: {fileID: 11400000, guid: 59659be6fc93f38408be6a79957c2cf8, type: 2}
 --- !u!1 &832575517
 GameObject:
