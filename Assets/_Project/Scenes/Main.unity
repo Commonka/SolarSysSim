@@ -436,6 +436,7 @@ GameObject:
   - component: {fileID: 549064798}
   - component: {fileID: 549064799}
   - component: {fileID: 549064800}
+  - component: {fileID: 549064801}
   m_Layer: 0
   m_Name: SimulationManager
   m_TagString: Untagged
@@ -497,8 +498,6 @@ MonoBehaviour:
   widthFactor: 0.003
   alpha: 0.35
   opacityMul: 1
-  dashesPlanet: 220
-  dashesMoon: 80
   tint: {r: 0.6, g: 0.65, b: 0.7, a: 1}
 --- !u!114 &549064795
 MonoBehaviour:
@@ -750,6 +749,19 @@ MonoBehaviour:
   sunLensFlare: {fileID: 0}
   sky: {fileID: 0}
   panelSettings: {fileID: 11400000, guid: 59659be6fc93f38408be6a79957c2cf8, type: 2}
+--- !u!114 &549064801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549064791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 741ccc0b8bc2d3c49b1a0ce451af5817, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BodyInspector
+  sim: {fileID: 549064792}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
