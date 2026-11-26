@@ -18,6 +18,7 @@ Shader "SolarSys/Earth"
         _AtmoPower ("Atmosphere Power", Range(1, 8)) = 3.0
         _Ambient ("Ambient", Range(0, 0.1)) = 0.015
         _LonOffset ("Longitude Offset", Range(-0.5, 0.5)) = 0.0
+        _HeatGlow ("Heat Glow", Color) = (0,0,0,1)
     }
     SubShader
     {
@@ -45,6 +46,7 @@ Shader "SolarSys/Earth"
                 float4 _AtmoColor;
                 float _AtmoIntensity, _AtmoPower;
                 float _Ambient, _LonOffset;
+                float4 _HeatGlow;
             CBUFFER_END
 
             float3 _SunPositionWS;
@@ -130,7 +132,9 @@ Shader "SolarSys/Earth"
                 float term = exp(-pow(ndl * 3.5, 2.0));
                 float3 atmo = _AtmoColor.rgb * rim * _AtmoIntensity * (1.0 + term * 1.5);
 
-                return float4(surface + atmo, 1.0);
+                float land = 1.0 - waterMask;
+                float3 heat = _HeatGlow.rgb * (0.35 + 0.65 * land);   // суша горит сильнее океана
+                return float4(surface + atmo + heat, 1.0);
             }
             ENDHLSL
         }

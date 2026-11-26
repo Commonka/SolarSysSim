@@ -10,12 +10,16 @@ public class CelestialBody
     public Vector3d position;  // км
     public Vector3d velocity;  // км/с
 
-    // Вращение
-    public double rotationPeriod;   // с, сидерический период (0 = не вращается)
-    public double axialTilt;        // град, наклон оси к плоскости орбиты (эклиптики)
-    public double rotationPhaseDeg; // град, начальный угол поворота
+    public double rotationPeriod;
+    public double axialTilt;
+    public double rotationPhaseDeg;
+    public double temperature = 280; // K
 
-    [NonSerialized] public Transform visual; // сфера на сцене
+    [NonSerialized] public bool isStar;    // светится и освещает остальные тела
+    [NonSerialized] public bool isUser;    // создано пользователем
+    [NonSerialized] public bool recolor;   // перекрашивать звезду по температуре
+    [NonSerialized] public Transform visual;
+    [NonSerialized] public Material material;
     [NonSerialized] public Color color = Color.white;
 
     public CelestialBody(string name, double mass, double radius, Vector3d position, Vector3d velocity)

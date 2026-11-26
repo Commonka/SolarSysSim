@@ -63,7 +63,8 @@ public class SunGlare : MonoBehaviour
         mat.SetFloat("_Disk", tanA / Mathf.Tan(H));
         mat.SetFloat("_Fade", 1f - 0.85f * Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.05f, 0.5f, a)));
         mat.SetFloat("_Intensity", intensity);
-        mat.SetColor("_Color", color);
+        // было:   mat.SetColor("_Color", color);
+        mat.SetColor("_Color", color * Blackbody.Tint((float)sun.temperature));
         mat.SetFloat("_DiskGain", 0.9f * (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.01f, 0.1f, a))));
     }
 }
